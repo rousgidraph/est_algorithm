@@ -1,6 +1,7 @@
 import math  #this is not an external library 
 import random 
 from queue import PriorityQueue
+from typing import OrderedDict
 
 
 """constants""" 
@@ -61,9 +62,10 @@ def read_env_file(filename,_obstacles,_bounds):
 
 # this method will out put the generated tree to a .map file 
 # if file exists delete and save new  
-def write_result():
-    sol = open("001.map","x")
-    sol.write("Something new and fresh")
+def write_result(edges_count,nodes_count,path):
+    sol = open("001.map","w")
+    sol.write("Number of nodes({0}) Number of edges({1})\n".format(nodes_count,edges_count))
+    sol.write(path)
     pass
 
 """Node manipulation methods """
@@ -140,15 +142,20 @@ def goal_reached(current_node,goal):
 
 
 def get_the_path(visited,current,came_from):
+    path = "\n"
     print(len(came_from))
     print("total edges added ",len(edges))
     print("Total nodes visited",len(visited))
-    print(current in came_from)
+    #print(current in came_from)
     while current in came_from:
+        
         previous_step = came_from[current]
-        print(current," came from ",previous_step)
+        #print(current," came from ",previous_step)
+        path = "({0}) \t ({1}) \n".format(str(previous_step),str(current)) + path
         current = previous_step
-
+    
+    write_result(len(edges),len(visited),path)
+    #print(path)
 def est_implementation(start,end):
     count = 0
     neighbor_count = 4 # how many neighbors per addition 
@@ -324,7 +331,7 @@ if __name__ == '__main__':
     #read the file and load the values 
     read_env_file(filename,obstacles,BOUNDS)
     #print(len(obstacles))
-    start_node = Node(-100,-100) # these can be randomised 
+    start_node = Node(-50,-100) # these can be randomised 
     goal_node = Node(100,100)
     #ensure the goal is in the bounds for optimisation.
     node_point = goal_node.get_coords()
